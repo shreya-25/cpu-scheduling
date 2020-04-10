@@ -1,0 +1,215 @@
+#include<stdio.h>
+#include<conio.h>
+int main()
+{
+int n,j,choice;
+printf("Enter the no of processes:");
+scanf("%d",&n);
+int at[n],bt[n],pr[n],wt[n],ct[n],tat[n],p[n];
+for(j=0;j<n;j++)
+{
+printf("Arrival Time of P[%d]:",j+1);
+scanf("%d",&at[j]);
+printf("Burst Time of P[%d]:",j+1);
+scanf("%d",&bt[j]);
+printf("Priority of P[%d]:",j+1);
+scanf("%d",&pr[j]);
+p[j]=j+1;
+
+}
+printf("Enter the scheduing algorithm you wish to apply: \n\n");
+printf("Case 1:FIRST COME FIRST SERVED\n");
+printf("Case 2:SHORTEST JOB FIRST\n");
+printf("Case 3:SHORTEST REMAINING TIME FIRST\n");
+printf("Case 4:NON PREEMPTIVE PRIORITY\n");   // smaller priority num implies high priority
+printf("Case 5:ROUND ROBIN\n\n");
+printf("Enter Your Choice:\n");
+scanf("%d",&choice);
+switch(choice)
+{
+case 1:
+{int i;
+ct[0]=at[0]+bt[0];
+wt[0]=0;
+tat[0]=ct[0]-at[0];   
+for(i=1;i<n;i++)
+{
+    if(at[i]<ct[i-1])
+      ct[i]=ct[i-1]+bt[i];
+    else
+      ct[i]=at[i]+bt[i];
+tat[i]=ct[i]-at[i];
+wt[i]=tat[i]-bt[i]; 
+}
+printf("P[n]\tAT\tBT\tCT\tTAT\tWT\n");
+for(i=0;i<n;i++)
+    {
+        printf("P[%d]\t%d\t%d\t%d\t%d\t%d\n",i+1,at[i],bt[i],ct[i],tat[i],wt[i]);
+    }
+ break;
+}
+case 2:
+	{ int i,k,temp,post;
+		 for(i=0;i<n;i++)
+    {
+        post=i;
+        for(k=i+1;k<n;k++)
+        {
+            if(bt[k]<bt[post])
+                post=k;
+        }
+ 
+        temp=bt[i];
+        bt[i]=bt[post];
+        bt[post]=temp;
+ 
+        temp=p[i];
+        p[i]=p[post];
+        p[post]=temp;
+    }
+ 
+    wt[0]=0;            //waiting time for first process will be zero
+ 
+    //calculate waiting time
+    for(i=1;i<n;i++)
+    {
+        wt[i]=0;
+        for(j=0;j<i;j++)
+            wt[i]+=bt[j];
+    }
+  printf("\nP[n]\tAT\tBT\tCT\tTAT\tWT");
+    for(i=0;i<n;i++)
+    {
+        tat[i]=bt[i]+wt[i];     
+        ct[i]=tat[i]+at[i];
+        printf("\np[%d]\t%d\t%d\t%d\t%d\t%d",p[i],at[i],bt[i],ct[i],tat[i],wt[i]);
+    }
+    break;
+	}
+	case 3:
+	{
+	int temp[n+1],i,p[n],k,min,c=0,time; double end;
+for(i=0;i<n;i++)
+ temp[i]=bt[i];
+
+  temp[n]=9999;
+ for(time=0;c!=n;time++)
+ {
+   min=n; 
+  for(i=0;i<n;i++)
+  {
+   if(at[i]<=time && bt[i]<bt[min] && bt[i]>0 )
+   min=i;
+  }
+  bt[min]--;
+  if(bt[min]==0)
+  {
+   c++;
+   end=time+1;
+   ct[min] = end;
+   wt[min] = end - at[min] - temp[min];
+   tat[min] = end - at[min];
+  }
+ }
+ printf("P[n]\tAT\tBT\tCT\tTAT\tWT\n");
+for(i=0;i<n;i++)
+    {
+        printf("P[%d]\t%d\t%d\t%d\t%d\t%d\n",i+1,at[i],temp[i],ct[i],tat[i],wt[i]);
+    }
+break;		
+}
+case 4:
+	{   int i,k,temp,pos;
+
+ for(i=0;i<n;i++)
+    {
+        pos=i;
+        for(k=i+1;k<n;k++)
+        {
+            if(pr[k]<pr[pos])
+                pos=k;
+        }
+ 
+        temp=pr[i];
+        pr[i]=pr[pos];
+        pr[pos]=temp;
+ 
+        temp=bt[i];
+        bt[i]=bt[pos];
+        bt[pos]=temp;
+ 
+        temp=p[i];
+        p[i]=p[pos];
+        p[pos]=temp;
+    }
+ 
+    wt[0]=0;	//waiting time for first process is zero
+ 
+    //calculate waiting time
+    for(i=1;i<n;i++)
+    {
+        wt[i]=0;
+        for(k=0;k<i;k++){
+            wt[i]+=bt[k];
+             }
+ 
+    }
+printf("P[n]\tAT\tBT\tPRIORITY\tCT\tTAT\tWT\n");
+for(i=0;i<n;i++)
+    {
+    	 tat[i]=bt[i]+wt[i];  
+		 ct[i] =tat[i]+at[i];
+        printf("P[%d]\t%d\t%d\t%d\t\t%d\t%d\t%d\n",p[i],at[i],bt[i],pr[i],ct[i],tat[i],wt[i]);
+    }
+break;		
+		}
+
+case 5:
+	{ int i,tempburst[n],time,c,t;
+	
+for(i=0;i<n;i++)
+  tempburst[i]=bt[i];
+ t=0;
+ while (1) 
+    { 
+        int l=1;
+        for (i=0;i<n;i++) 
+        { 
+            if (tempburst[i]>0) 
+            { 
+                l=0; 
+  
+                if (tempburst[i]>2) 
+                { 
+                    t+=2; 
+                    tempburst[i]=tempburst[i]-2; 
+                } 
+                else
+                { 
+                t=t+tempburst[i]; 
+                wt[i] = t - bt[i]; 
+                tempburst[i] = 0; 
+                } 
+            } 
+        } 
+        if (l== 1) 
+          break; 
+    }
+	for (i = 0; i < n ; i++) 
+	{
+        tat[i]=bt[i]+wt[i];
+		ct[i] =tat[i] +at[i]; } 
+  
+ printf("P[n]\tAT\tBT\tCT\tTAT\tWT\n");
+for(i=0;i<n;i++)
+    {
+        printf("P[%d]\t%d\t%d\t%d\t%d\t%d\n",i+1,at[i],bt[i],ct[i],tat[i],wt[i]);
+    }
+		
+	break;	
+	}
+			
+return 0;
+getch();
+}
+}
